@@ -6,6 +6,7 @@ import (
 		"bytes"
 		"fmt"
 		"path/filepath"
+		"strconv"
 )
 
 func BookListConcat(id string) string {
@@ -26,13 +27,14 @@ func main() {
 
 		adress = os.Args[1]
 
-		if strings.Contains(adress, "http://") || strings.Contains(adress, "https://") {
+		_, err := strconv.ParseInt(adress, 10, 0)
+		if err == nil {
+			id =  adress
+		} else if strings.Contains(adress, "http://") || strings.Contains(adress, "https://") {
 			id =  AuthorXmlParserFromUrl(adress)
 		} else if strings.Compare(filepath.Ext(adress), ".xml") == 0 {
-			id = AuthorXmlParserFromFile(adress)
+			id = AuthorXmlParserFromFile(adress) // Clean id format "id id id id id"
 		}
-
-		// Clean id format "id id id id id"
 
 		BookListQuery := BookListConcat(id)
 		BookListXmlParser(BookListQuery)
