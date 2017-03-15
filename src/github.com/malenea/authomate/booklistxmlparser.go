@@ -2,7 +2,6 @@ package main
 
 import (
 		"encoding/xml"
-		"bytes"
 		"fmt"
 		"log"
 )
@@ -13,6 +12,7 @@ type Book struct {
 	XMLName 	xml.Name	`xml:"book"`
 	Id			int			`xml:"id"`
 	Title		string 		`xml:"title"`
+	NakedTitle	string 		`xml:"title_without_series"`
 }
 
 type Library struct {
@@ -22,37 +22,33 @@ type Library struct {
 
 type Author struct {
 	XMLName		xml.Name	`xml:"author"`
+	Id 			int			`xml:"id"`
 	Name 		string 		`xml:"name"`
 	Lib 		Library		`xml:"books"`		
 }
 
-type Div struct {
+type BookListXml struct {
 	XMLName		xml.Name	`xml:"GoodreadsResponse"`
 	Auth		Author		`xml:"author"`
 }
 
 func (b Book) String() string {
-	return fmt.Sprintf(" Id : %d - Title : %s\n",
-		b.Id, b.Title)
+	return fmt.Sprintf(" Id : %d\n\tTitle with serie : %s\n\tTitle without serie : %s\n",
+		b.Id, b.Title, b.NakedTitle)
 }
 
-// Main function of the XmlParser that creates the url using an id and the author's
+// Main function of the BookXmlParser that creates the url using an id and the author's
 // goodreads' key and parses the formatted XML as well as handling errors
 
-func XmlParser(id, key string) {
-	var url bytes.Buffer
-	url.WriteString("https://www.goodreads.com/author/list.xml?key=")
-	url.WriteString(key)
-	url.WriteString("&id=")
-	url.WriteString(id)
+func BookListXmlParser(url string) {
 
-	if XMLdata, err := GetXml(url.String()); err != nil {
+	if XMLdata, err := GetXml(url); err != nil {
 		log.Printf("Failed to retrieve XML: %v", err)
 	} else {
-		var d Div
-		xml.Unmarshal(XMLdata, &d)
 
-		fmt.Println("\nAuthor: ", d.Auth.Name, "\n")
-		fmt.Println(d.Auth.Lib.Books)
+		var blx BookListXml
+		xml.Unmarshal(XMLdata, &blx)
+
+		fmt.Println(blx.Auth.Lib.Books)
 	}
 }
