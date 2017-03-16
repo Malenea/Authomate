@@ -3,7 +3,6 @@ package main
 import (
 		"io/ioutil"
 		"net/http"
-		"fmt"
 		"strings"
 		"bytes"
 		"regexp"
@@ -12,14 +11,15 @@ import (
 
 // Concat the URL for the author's id request using the author's name
 
-func FetchAuthorConcat(name string) string {
+func FetchAuthorConcat(key, name string) string {
 	var AuthorName bytes.Buffer
 
 	name = strings.TrimSpace(name)
 	name = strings.Replace(name, " ", "_", -1)
 	AuthorName.WriteString("https://www.goodreads.com/api/author_url/")
 	AuthorName.WriteString(name)
-	AuthorName.WriteString("?key=kDkKnUxiz8cRBJhVjrtSA")
+	AuthorName.WriteString("?key=")
+	AuthorName.WriteString(key)
 
 	return AuthorName.String()
 }
@@ -44,11 +44,11 @@ func GetIdFromXml(data, fdelim, bdelim string, oc int) string {
 // Main function that will fetch the author's id from a XML format and return it as
 // a string
 
-func FetchAuthorFromName(name string) string {
+func FetchAuthorFromName(key, name string) string {
 	strings.Join(strings.Fields(name), " ")
 	inwhitespace := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
 	name = inwhitespace.ReplaceAllString(name, " ")
-	concaturl := FetchAuthorConcat(name)
+	concaturl := FetchAuthorConcat(key, name)
 
 	xmlresp, err := http.Get(concaturl)
 	if err != nil {

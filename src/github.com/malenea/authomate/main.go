@@ -11,11 +11,11 @@ import (
 
 // Concat the URL for the author's book list request using the author's id
 
-func BookListConcat(id string) string {
+func BookListConcat(key, id string) string {
 	var BookList bytes.Buffer
 
 	BookList.WriteString("https://www.goodreads.com/author/list.xml?key=")
-	BookList.WriteString("kDkKnUxiz8cRBJhVjrtSA")
+	BookList.WriteString(key)
 	BookList.WriteString("&id=")
 	BookList.WriteString(id)
 
@@ -24,7 +24,7 @@ func BookListConcat(id string) string {
 
 // GetId function that allows input parameter, direct int id / URL XML / .xml
 
-func GetId(value string) []string {
+func GetId(key, value string) []string {
 	var idarray []string
 
 	_, err := strconv.ParseInt(value, 10, 0)
@@ -36,7 +36,7 @@ func GetId(value string) []string {
 	} else if strings.Compare(filepath.Ext(value), ".xml") == 0 {
 		idarray = AuthorXmlParserFromFile(value)
 	} else {
-		id := FetchAuthorFromName(value)
+		id := FetchAuthorFromName(key, value)
 		idarray = append(idarray, id)
 	}
 
@@ -46,6 +46,7 @@ func GetId(value string) []string {
 // Main function
 
 func main() {
+	key := "0"
 	if len(os.Args) > 1 {
 
 		var adress string
@@ -54,10 +55,10 @@ func main() {
 		for it := range args {
 			adress = args[it]
 
-			idarray := GetId(adress)
+			idarray := GetId(key, adress)
 
 			for _, eachid := range idarray {
-				booklistquery := BookListConcat(eachid)
+				booklistquery := BookListConcat(key, eachid)
 				booklist := BookListXmlParser(booklistquery)
 
 				for _, eachbook := range booklist {
