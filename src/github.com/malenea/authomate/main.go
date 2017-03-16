@@ -1,12 +1,13 @@
 package main
 
 import (
-		"os"
 		"strings"
 		"bytes"
 		"fmt"
 		"path/filepath"
 		"strconv"
+		"flag"
+		"log"
 )
 
 // Concat the URL for the author's book list request using the author's id
@@ -43,22 +44,48 @@ func GetId(key, value string) []string {
 	return idarray
 }
 
-// Main function
+// Main function with flags management
+
+type StringFlag struct {
+	IsSet	bool
+	Value	string
+}
+
+func (sf *StringFlag) Set(value string) error {
+	sf.Value = value
+	sf.IsSet = true
+	return nil
+}
+
+func (sf *StringFlag) String() string {
+	return sf.Value
+}
+
+var key StringFlag
 
 func main() {
-	key := "0"
-	if len(os.Args) > 1 {
+	flag.Var(&key, "key", "Your dev key")
+	flag.Parse()
+
+	if !key.IsSet {
+		log.Printf("Please provide a dev key")
+		log.Printf("Usage of Authomate : authomate -key={your_key} Args[...]")
+		return
+	}
+
+	args := flag.Args()
+
+	if len(args) >= 1 {
 
 		var adress string
-		args := os.Args[1:]
 
 		for it := range args {
 			adress = args[it]
 
-			idarray := GetId(key, adress)
+			idarray := GetId(key.Value, adress)
 
 			for _, eachid := range idarray {
-				booklistquery := BookListConcat(key, eachid)
+				booklistquery := BookListConcat(key.Value, eachid)
 				booklist := BookListXmlParser(booklistquery)
 
 				for _, eachbook := range booklist {
@@ -69,6 +96,7 @@ func main() {
 	return
 	}
 
-	fmt.Println("Authomate takes as parameter either the XML answer of a book review")
-	fmt.Println("or the .xml file of the book review")
+	log.Printf("Usage of Authomate : authomate -key={your_key} Args[...]")
+	log.Printf("Where Args are the author's ids or names, or the xml files or urls of")
+	log.Printf("one or more of the author's book review")
 }
