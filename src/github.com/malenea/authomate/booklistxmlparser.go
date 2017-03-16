@@ -2,7 +2,6 @@ package main
 
 import (
 		"encoding/xml"
-		"fmt"
 		"log"
 )
 
@@ -32,15 +31,21 @@ type BookListXml struct {
 	Auth		Author		`xml:"author"`
 }
 
-func (b Book) String() string {
-	return fmt.Sprintf(" Id : %d\n\tTitle with serie : %s\n\tTitle without serie : %s\n",
-		b.Id, b.Title, b.NakedTitle)
+// Function that returns only the naked titles of each book from the []Book in a []string
+
+func BookStructToArray(bookarray []Book) []string {
+	var res []string
+
+	for _, each := range bookarray {
+		res = append(res, each.NakedTitle)
+	}
+	return res
 }
 
 // Main function of the BookXmlParser that fetches the book list XML using an auth id
 // and the author's key and parses the formatted XML as well as handling errors
 
-func BookListXmlParser(url string) {
+func BookListXmlParser(url string) []string {
 
 	if XMLdata, err := GetXml(url); err != nil {
 		log.Printf("Failed to retrieve XML: %v", err)
@@ -49,6 +54,7 @@ func BookListXmlParser(url string) {
 		var blx BookListXml
 		xml.Unmarshal(XMLdata, &blx)
 
-		fmt.Println(blx.Auth.Lib.Books)
+		return BookStructToArray(blx.Auth.Lib.Books)
 	}
+	return nil
 }

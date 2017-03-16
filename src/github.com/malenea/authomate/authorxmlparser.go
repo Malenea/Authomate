@@ -1,10 +1,10 @@
 package main
 
 import (
+		"fmt"
 		"os"
 		"io/ioutil"
 		"encoding/xml"
-		"fmt"
 		"log"
 )
 
@@ -31,31 +31,40 @@ type AuthorXml struct {
 	Work		SingleBook	`xml:"book"`
 }
 
-func (w Writer) String() string {
-	return fmt.Sprintf("%d", w.Id)
+// Function that returns only the author's names of each author from the []Writer
+// in a []string
+
+func WriterStructToArray(writerarray []Writer) []string {
+	var res []string
+
+	for _, each := range writerarray {
+		res = append(res, fmt.Sprintf("%d ", each.Id))
+	}
+	return res
 }
 
 // Functions of the AuthorXmlParser that creates the author key using an auth id
 // from a book's review XML page or file
 
-func AuthorXmlParserFromUrl(url string) string {
+func AuthorXmlParserFromUrl(url string) []string {
 
 	if XMLdata, err := GetXml(url); err != nil {
 		log.Printf("Failed to retrieve XML: %v", err)
 	} else {
 		var ax AuthorXml
 		xml.Unmarshal(XMLdata, &ax)
-		return fmt.Sprintf("%s", ax.Work.Pool.Auth)
+
+		return WriterStructToArray(ax.Work.Pool.Auth)
 	}
 
-	return ""
+	return nil
 }
 
-func AuthorXmlParserFromFile(path string) string {
+func AuthorXmlParserFromFile(path string) []string {
 	XMLfile, err := os.Open(path)
 	if err != nil {
 		log.Printf("Failed to open XML file: %v", err)
-		return ""
+		return nil
 	}
 	defer XMLfile.Close()
 
@@ -64,5 +73,5 @@ func AuthorXmlParserFromFile(path string) string {
 	var ax AuthorXml
 	xml.Unmarshal(XMLdata, &ax)
 
-	return fmt.Sprintf("%s", ax.Work.Pool.Auth)
+	return WriterStructToArray(ax.Work.Pool.Auth)
 }

@@ -24,19 +24,23 @@ func BookListConcat(id string) string {
 
 // GetId function that allows input parameter, direct int id / URL XML / .xml
 
-func GetId(adress string) string {
-	var id string
-	_, err := strconv.ParseInt(adress, 10, 0)
+func GetId(value string) []string {
+	var idarray []string
+
+	_, err := strconv.ParseInt(value, 10, 0)
 	if err == nil {
-		id =  adress
-	} else if strings.Contains(adress, "http://") || strings.Contains(adress, "https://") {
-		id =  AuthorXmlParserFromUrl(adress)
-	} else if strings.Compare(filepath.Ext(adress), ".xml") == 0 {
-		id = AuthorXmlParserFromFile(adress)
+		idarray = append(idarray, value)
+		return idarray
+	} else if strings.Contains(value, "http://") || strings.Contains(value, "https://") {
+		idarray =  AuthorXmlParserFromUrl(value)
+	} else if strings.Compare(filepath.Ext(value), ".xml") == 0 {
+		idarray = AuthorXmlParserFromFile(value)
+	} else {
+		id := FetchAuthorFromName(value)
+		idarray = append(idarray, id)
 	}
-	id = strings.Replace(id, "[", "", -1)
-	id = strings.Replace(id, "]", "", -1)
-	return id
+
+	return idarray
 }
 
 // Main function
@@ -44,22 +48,26 @@ func GetId(adress string) string {
 func main() {
 	if len(os.Args) > 1 {
 
-		var adress, id string
+		var adress string
+		args := os.Args[1:]
 
-		for it := range os.Args {
-		adress = os.Args[it]
+		for it := range args {
+			adress = args[it]
 
-		id = GetId(adress)
-		idArray := strings.Fields(id)
+			idarray := GetId(adress)
 
-		for _, each := range idArray {
-			BookListQuery := BookListConcat(each)
-			BookListXmlParser(BookListQuery)
+			for _, eachid := range idarray {
+				booklistquery := BookListConcat(eachid)
+				booklist := BookListXmlParser(booklistquery)
+
+				for _, eachbook := range booklist {
+					fmt.Println(eachbook)
+				}
+			}
 		}
+	return
 	}
 
-		return
-	}
 	fmt.Println("Authomate takes as parameter either the XML answer of a book review")
 	fmt.Println("or the .xml file of the book review")
 }
