@@ -37,8 +37,8 @@ func (b Book) String() string {
 		b.Id, b.Title, b.NakedTitle)
 }
 
-// Main function of the BookXmlParser that creates the url using an id and the author's
-// goodreads' key and parses the formatted XML as well as handling errors
+// Main function of the BookXmlParser that fetches the book list XML using an auth id
+// and the author's key and parses the formatted XML as well as handling errors
 
 func BookListXmlParser(url string) {
 

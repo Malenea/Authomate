@@ -18,7 +18,7 @@ type Writer struct {
 
 type AuthPool struct {
 	XMLName		xml.Name	`xml:"authors"`
-	Auth 		Writer 		`xml:"author"`
+	Auth 		[]Writer	`xml:"author"`
 }
 
 type SingleBook struct {
@@ -35,15 +35,14 @@ func (w Writer) String() string {
 	return fmt.Sprintf("%d", w.Id)
 }
 
-// Main function of the BookXmlParser that creates the url using an id and the author's
-// goodreads' key and parses the formatted XML as well as handling errors
+// Functions of the AuthorXmlParser that creates the author key using an auth id
+// from a book's review XML page or file
 
 func AuthorXmlParserFromUrl(url string) string {
 
 	if XMLdata, err := GetXml(url); err != nil {
 		log.Printf("Failed to retrieve XML: %v", err)
 	} else {
-
 		var ax AuthorXml
 		xml.Unmarshal(XMLdata, &ax)
 		return fmt.Sprintf("%s", ax.Work.Pool.Auth)
