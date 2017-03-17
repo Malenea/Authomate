@@ -11,22 +11,21 @@ import (
 
 // Concat the URL for the author's id request using the author's name
 
-func FetchAuthorConcat(key, name string) string {
-	var AuthorName bytes.Buffer
+func FetchAuthorIdConcat(key, id string) string {
+	var AuthorId bytes.Buffer
 
-	name = strings.TrimSpace(name)
-	name = strings.Replace(name, " ", "_", -1)
-	AuthorName.WriteString("https://www.goodreads.com/api/author_url/")
-	AuthorName.WriteString(name)
-	AuthorName.WriteString("?key=")
-	AuthorName.WriteString(key)
+	id = strings.TrimSpace(id)
+	AuthorId.WriteString("https://www.goodreads.com/author/show.xml?key=")
+	AuthorId.WriteString(key)
+	AuthorId.WriteString("&id=")
+	AuthorId.WriteString(id)
 
-	return AuthorName.String()
+	return AuthorId.String()
 }
 
-// Function that allows to get a special string in a XML format
+// Function that allows to get a goodreaders' author's id in a XML format author's review
 
-func GetStrFromXml(data, fdelim, bdelim string, oc int) string {
+func GetIdFromXml(data, fdelim, bdelim string, oc int) string {
 	datatab := strings.Split(data, fdelim)
 	if len(datatab) <= oc {
 		return ""
@@ -44,11 +43,11 @@ func GetStrFromXml(data, fdelim, bdelim string, oc int) string {
 // Main function that will fetch the author's id from a XML format and return it as
 // a string
 
-func FetchAuthorFromName(key, name string) string {
-	strings.Join(strings.Fields(name), " ")
+func FetchAuthorNameFromId(key, id string) string {
+	strings.Join(strings.Fields(id), " ")
 	inwhitespace := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
-	name = inwhitespace.ReplaceAllString(name, " ")
-	concaturl := FetchAuthorConcat(key, name)
+	id = inwhitespace.ReplaceAllString(id, " ")
+	concaturl := FetchAuthorIdConcat(key, id)
 
 	xmlresp, err := http.Get(concaturl)
 	if err != nil {
@@ -60,7 +59,7 @@ func FetchAuthorFromName(key, name string) string {
 			log.Printf("Failed to read XML: %v", err)
 		}
 
-		return GetStrFromXml(string(xmldata), "author id=\"", "\"", 1)
+		return GetStrFromXml(string(xmldata), "<name>", "</name>", 1)
 	}
 
 	return ""

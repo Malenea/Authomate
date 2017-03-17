@@ -25,23 +25,46 @@ func BookListConcat(key, id string) string {
 
 // GetId function that allows input parameter, direct int id / URL XML / .xml
 
-func GetId(key, value string) []string {
-	var idarray []string
+func GetId(key, value string) ([]string, []string) {
+	var idarray, namearray []string
 
 	_, err := strconv.ParseInt(value, 10, 0)
 	if err == nil {
 		idarray = append(idarray, value)
-		return idarray
+		namearray = append(namearray, FetchAuthorNameFromId(key, value))
+		return idarray, namearray
 	} else if strings.Contains(value, "http://") || strings.Contains(value, "https://") {
-		idarray =  AuthorXmlParserFromUrl(value)
+		idarray, namearray =  AuthorXmlParserFromUrl(value)
 	} else if strings.Compare(filepath.Ext(value), ".xml") == 0 {
-		idarray = AuthorXmlParserFromFile(value)
+		idarray, namearray = AuthorXmlParserFromFile(value)
 	} else {
 		id := FetchAuthorFromName(key, value)
 		idarray = append(idarray, id)
+		namearray = append(namearray, value)
 	}
 
-	return idarray
+	return idarray, namearray
+}
+
+// Function to reformat map[string]interface{}
+
+func ToMstringInt(name string, books []string) map[string]interface{} {
+	var result map[string]interface{}
+
+	if result == nil {
+		result = make(map[string]interface{})
+	}
+
+	_, ok := result[name]
+	if !ok {
+		bookvalues := make ([]interface{}, len(books))
+		for i, b := range books {
+			bookvalues[i] = b
+		}
+		result[name] = bookvalues
+	}
+
+	return result
 }
 
 // Main function with flags management
@@ -82,15 +105,25 @@ func main() {
 		for it := range args {
 			adress = args[it]
 
-			idarray := GetId(key.Value, adress)
+			idarray, namearray := GetId(key.Value, adress)
 
-			for _, eachid := range idarray {
+			fmt.Println(namearray, ":")
+
+			for _/*i*/, eachid := range idarray {
 				booklistquery := BookListConcat(key.Value, eachid)
 				booklist := BookListXmlParser(booklistquery)
+
+				// Commented code is formated map[string]interface{}
+
+				/*result := ToMstringInt(namearray[i], booklist)
+				fmt.Println(result)*/
+
+				// This part is just a nice output of the results (readable)
 
 				for _, eachbook := range booklist {
 					fmt.Println(eachbook)
 				}
+				fmt.Println("")
 			}
 		}
 	return
