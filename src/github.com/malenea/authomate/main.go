@@ -3,7 +3,6 @@ package main
 import (
 		"strings"
 		"bytes"
-		"fmt"
 		"path/filepath"
 		"strconv"
 		"flag"
@@ -123,42 +122,7 @@ func main() {
 			adress = args[it]
 
 			idarray, namearray := GetId(key.Value, adress)
-
-			for i, eachid := range idarray {
-
-				fmt.Println(namearray[i])
-				page := "1"
-
-				booklistquery := BookListConcat(key.Value, eachid, page)
-				booklist, total := BookListXmlParser(booklistquery)
-
-				tmp, err := strconv.Atoi(total)
-				if err != nil {
-					log.Printf("Error occured from page count: %v", err)
-					break
-				}
-				sum := 1
-				for i := 30; i < tmp; i += 30 {
-					sum +=  1
-				}
-
-				for pageit := 1; pageit <= sum; pageit++ {
-					booklistquery = BookListConcat(key.Value, eachid, strconv.Itoa(pageit))
-					booklist, _ = BookListXmlParser(booklistquery)
-
-					// Commented code is formated map[string]interface{}
-
-					/*result := ToMstringInt(namearray[i], booklist)
-					fmt.Println(result)*/
-
-					// This part is just a nice output of the results (readable)
-
-					for _, eachbook := range booklist {
-						fmt.Println(eachbook)
-					}
-				}
-				fmt.Println("")
-			}
+			IteratePages(idarray, namearray, key.Value)
 		}
 	return
 	}
