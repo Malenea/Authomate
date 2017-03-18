@@ -25,8 +25,17 @@ func BookListConcat(key, id string) string {
 
 // GetId function that allows input parameter, direct int id / URL XML / .xml
 
+func SortUrlType(url string) bool {
+	if strings.Contains(url, "/author_url/") {
+		return true
+	} else {
+		return false
+	}
+}
+
 func GetId(key, value string) ([]string, []string) {
 	var idarray, namearray []string
+	var id, name string
 
 	_, err := strconv.ParseInt(value, 10, 0)
 	if err == nil {
@@ -34,11 +43,17 @@ func GetId(key, value string) ([]string, []string) {
 		namearray = append(namearray, FetchAuthorNameFromId(key, value))
 		return idarray, namearray
 	} else if strings.Contains(value, "http://") || strings.Contains(value, "https://") {
-		idarray, namearray =  AuthorXmlParserFromUrl(value)
+		if SortUrlType(value) {
+			id, name = FetchAuthorFromAuthorUrl(value)
+			idarray = append(idarray, id)
+			namearray = append(namearray, name)
+		} else {
+			idarray, namearray =  AuthorXmlParserFromUrl(value)
+		}
 	} else if strings.Compare(filepath.Ext(value), ".xml") == 0 {
 		idarray, namearray = AuthorXmlParserFromFile(value)
 	} else {
-		id := FetchAuthorFromName(key, value)
+		id = FetchAuthorFromName(key, value)
 		idarray = append(idarray, id)
 		namearray = append(namearray, value)
 	}

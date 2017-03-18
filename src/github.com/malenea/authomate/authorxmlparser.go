@@ -38,8 +38,8 @@ func WriterStructToArray(writerarray []Writer) ([]string, []string) {
 	var resid, resname []string
 
 	for _, each := range writerarray {
-		resid = append(resid, fmt.Sprintf("%d ", each.Id))
-		resname = append(resname, fmt.Sprintf("%s ", each.Id))
+		resid = append(resid, fmt.Sprintf("%d", each.Id))
+		resname = append(resname, fmt.Sprintf("%s", each.Name))
 	}
 	return resid, resname
 }

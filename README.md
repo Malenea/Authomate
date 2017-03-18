@@ -99,6 +99,20 @@ Each book title is sorted as title without associated series. This can easily be
                                *----------------------*
 ```
 
+### Testing
+
+To run unit tests, simply run the following commands :
+
+```
+source ./GoSetEnv.sh {your_dev_key} <-- /!\ Don't forget to source it
+or
+Set the Environment variable GR_DEVKEY to your dev key value
+
+./GoTest.sh
+```
+
+The unit tests use the environment variable GR_DEVKEY to provide your dev key to the tests. Unlike the normal program wich will use -key={your_dev_key} as flag to provide your key.
+
 ### Build with
 
 Golang compiler

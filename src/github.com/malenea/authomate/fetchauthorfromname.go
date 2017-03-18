@@ -44,6 +44,25 @@ func GetStrFromXml(data, fdelim, bdelim string, oc int) string {
 // Main function that will fetch the author's id from a XML format and return it as
 // a string
 
+func FetchAuthorFromAuthorUrl(url string) (string, string) {
+	xmlresp, err := http.Get(url)
+	if err != nil {
+		log.Printf("Failed to http.Get XML: %v", err)
+	} else {
+		defer xmlresp.Body.Close()
+		xmldata, err := ioutil.ReadAll(xmlresp.Body)
+		if err != nil {
+			log.Printf("Failed to read XML: %v", err)
+		}
+
+		id := GetStrFromXml(string(xmldata), "<author id=\"", "\">", 1)
+		name := GetStrFromXml(string(xmldata), "<name><![CDATA[", "]]></name>", 1)
+		return id, name
+	}
+
+	return "", ""
+}
+
 func FetchAuthorFromName(key, name string) string {
 	strings.Join(strings.Fields(name), " ")
 	inwhitespace := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
