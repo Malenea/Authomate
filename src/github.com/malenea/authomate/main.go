@@ -12,13 +12,15 @@ import (
 
 // Concat the URL for the author's book list request using the author's id
 
-func BookListConcat(key, id string) string {
+func BookListConcat(key, id string, page string) string {
 	var BookList bytes.Buffer
 
 	BookList.WriteString("https://www.goodreads.com/author/list.xml?key=")
 	BookList.WriteString(key)
 	BookList.WriteString("&id=")
 	BookList.WriteString(id)
+	BookList.WriteString("&page=")
+	BookList.WriteString(page)
 
 	return BookList.String()
 }
@@ -122,21 +124,38 @@ func main() {
 
 			idarray, namearray := GetId(key.Value, adress)
 
-			fmt.Println(namearray, ":")
+			for i, eachid := range idarray {
 
-			for _/*i*/, eachid := range idarray {
-				booklistquery := BookListConcat(key.Value, eachid)
-				booklist := BookListXmlParser(booklistquery)
+				fmt.Println(namearray[i])
+				page := "1"
 
-				// Commented code is formated map[string]interface{}
+				booklistquery := BookListConcat(key.Value, eachid, page)
+				booklist, total := BookListXmlParser(booklistquery)
 
-				/*result := ToMstringInt(namearray[i], booklist)
-				fmt.Println(result)*/
+				tmp, err := strconv.Atoi(total)
+				if err != nil {
+					log.Printf("Error occured from page count: %v", err)
+					break
+				}
+				sum := 1
+				for i := 30; i < tmp; i += 30 {
+					sum +=  1
+				}
 
-				// This part is just a nice output of the results (readable)
+				for pageit := 1; pageit <= sum; pageit++ {
+					booklistquery = BookListConcat(key.Value, eachid, strconv.Itoa(pageit))
+					booklist, _ = BookListXmlParser(booklistquery)
 
-				for _, eachbook := range booklist {
-					fmt.Println(eachbook)
+					// Commented code is formated map[string]interface{}
+
+					/*result := ToMstringInt(namearray[i], booklist)
+					fmt.Println(result)*/
+
+					// This part is just a nice output of the results (readable)
+
+					for _, eachbook := range booklist {
+						fmt.Println(eachbook)
+					}
 				}
 				fmt.Println("")
 			}

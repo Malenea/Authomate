@@ -45,7 +45,7 @@ func BookStructToArray(bookarray []Book) []string {
 // Main function of the BookXmlParser that fetches the book list XML using an auth id
 // and the author's key and parses the formatted XML as well as handling errors
 
-func BookListXmlParser(url string) []string {
+func BookListXmlParser(url string) ([]string, string) {
 
 	if XMLdata, err := GetXml(url); err != nil {
 		log.Printf("Failed to retrieve XML: %v", err)
@@ -54,7 +54,9 @@ func BookListXmlParser(url string) []string {
 		var blx BookListXml
 		xml.Unmarshal(XMLdata, &blx)
 
-		return BookStructToArray(blx.Auth.Lib.Books)
+		total := GetStrFromXml(string(XMLdata), "total=\"", "\"", 1)
+
+		return BookStructToArray(blx.Auth.Lib.Books), total
 	}
-	return nil
+	return nil, ""
 }
