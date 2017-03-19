@@ -79,3 +79,7 @@ func TestBookListConcat(t *testing.T) {
 		fmt.Println(concaturl)
 	}
 }
+
+func TetIteratePages(t *testing.T) {
+	idarray, namearray []string
+}

@@ -12,16 +12,16 @@ import (
 // Concat the URL for the author's book list request using the author's id
 
 func BookListConcat(key, id string, page string) string {
-	var BookList bytes.Buffer
+	var booklist bytes.Buffer
 
-	BookList.WriteString("https://www.goodreads.com/author/list.xml?key=")
-	BookList.WriteString(key)
-	BookList.WriteString("&id=")
-	BookList.WriteString(id)
-	BookList.WriteString("&page=")
-	BookList.WriteString(page)
+	booklist.WriteString("https://www.goodreads.com/author/list.xml?key=")
+	booklist.WriteString(key)
+	booklist.WriteString("&id=")
+	booklist.WriteString(id)
+	booklist.WriteString("&page=")
+	booklist.WriteString(page)
 
-	return BookList.String()
+	return booklist.String()
 }
 
 // GetId function that allows input parameter, direct int id / URL XML / .xml
@@ -32,6 +32,18 @@ func SortUrlType(url string) bool {
 	} else {
 		return false
 	}
+}
+
+func CheckUrlEnd(url, key string) string {
+	if strings.Contains(url, "/book/show/") && !strings.Contains(url, "?key=") {
+		var newurl bytes.Buffer
+
+		newurl.WriteString(url)
+		newurl.WriteString("?key=")
+		newurl.WriteString(key)
+		return newurl.String()
+	}
+	return url
 }
 
 func GetId(key, value string) ([]string, []string) {
@@ -49,6 +61,7 @@ func GetId(key, value string) ([]string, []string) {
 			idarray = append(idarray, id)
 			namearray = append(namearray, name)
 		} else {
+			value = CheckUrlEnd(value, key)
 			idarray, namearray =  AuthorXmlParserFromUrl(value)
 		}
 	} else if strings.Compare(filepath.Ext(value), ".xml") == 0 {

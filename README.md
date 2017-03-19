@@ -24,10 +24,11 @@ The Authomate's binary is in the bin folder.
 To run it simply follow those examples' commands:
 
 ```
-./bin/authomate "Douglas Adams"
-./bin/authomate 4
-./bin/authomate resources/Goodreads.xml
-./bin/authomate https://www.goodreads.com/book/show/11.xml?key={your_dev_key}
+{Authomate_folder}/bin/authomate -key="{your_dev_key}" "Douglas Adams"
+{Authomate_folder}/bin/authomate -key="{your_dev_key}" 4
+{Authomate_folder}/bin/authomate -key="{your_dev_key}" resources/Goodreads.xml
+{Authomate_folder}/bin/authomate -key="{your_dev_key}" https://www.goodreads.com/book/show/11.xml?key={your_dev_key}
+{Authomate_folder}/bin/authomate -key="{your_dev_key}" https://www.goodreads.com/book/show/11.xml
 ```
 
 You should then get that output:
@@ -63,6 +64,7 @@ The Hitchhiker's Guide to the Galaxy: The Quintessential Phase
 The Illustrated Hitchhiker's Guide To The Galaxy
 Doctor Who: Shada
 The Private Life of Genghis Khan
+[...]
 ```
 
 Each book title is sorted as title without associated series. This can easily be modified though as the title with series is also parsed in the code.
@@ -72,10 +74,10 @@ Each book title is sorted as title without associated series. This can easily be
 ```
 *---------------*
 | Author's id   |
-| Author's name | -> Parameters are provided as follow, author's name (i.e "Stephen King"),
+| Author's name | -> Parameters are provided as, author's name (i.e "Stephen King"),
 | XML File      |    author's id (i.e "3014"), XML file (i.e "Silmarilion_-_review.xml"),
-| XML url       |    or XML url (i.e "https://goodreads.com/book/show/[...].xml[...]").
-*------*--------*
+| XML url       |    or XML url (i.e "https://goodreads.com/book/show/[...].xml[...]")
+*------*--------*    with or without your dev key
        |
        |
        |               *----> url ----> http.Get --*
@@ -102,6 +104,13 @@ Each book title is sorted as title without associated series. This can easily be
 ```
 
 Http requests to the Goodreads api are made using Go routines and sync to avoid synchronous requests (queuing takes lots of time taking in account that the Goodreads api is limited in request / time).
+
+```
+- Note -
+You can povide a book review URL with your dev key
+(i.e : https://www.goodreads.com/book/show/11.xml?key={your_dev_key})
+But also without, so: https://www.goodreads.com/book/show/11.xml would also work.
+```
 
 ### Testing
 
