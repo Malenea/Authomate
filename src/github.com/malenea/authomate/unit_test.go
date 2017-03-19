@@ -75,11 +75,14 @@ func TestBookListConcat(t *testing.T) {
 	testids := [2]string{JKRid, SKid}
 
 	for _, eachid := range testids {
-		concaturl := BookListConcat(testkey, eachid)
+		concaturl := BookListConcat(testkey, eachid, "1")
 		fmt.Println(concaturl)
 	}
 }
 
-func TetIteratePages(t *testing.T) {
-	idarray, namearray []string
+func TestIteratePages(t *testing.T) {
+	idarray := []string{"Stephen King", "J.K. Rowling"}
+	namearray := []string{"3389", "1077326"}
+
+	IteratePages(idarray, namearray, testkey)
 }
