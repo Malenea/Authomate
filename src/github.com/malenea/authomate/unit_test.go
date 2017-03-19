@@ -80,9 +80,11 @@ func TestBookListConcat(t *testing.T) {
 	}
 }
 
+// Testing iteration with array including multiple ids, authors
+
 func TestIteratePages(t *testing.T) {
-	idarray := []string{"Stephen King", "J.K. Rowling"}
-	namearray := []string{"3389", "1077326"}
+	idarray := []string{"3389", "1077326"}
+	namearray := []string{"Stephen King", "J.K. Rowling"}
 
 	IteratePages(idarray, namearray, testkey)
 }
