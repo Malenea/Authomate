@@ -78,13 +78,15 @@ Each book title is sorted as title without associated series. This can easily be
 *------*--------*
        |
        |
-       v               *----> url ----> http.Get --*
-*------*--------*      |                           |
+       |               *----> url ----> http.Get --*
+       v               |                           |
+*------*--------*      |                           v
 | Sorting       | -----*----> file ----------------*----> XML parsing to get id ----* 
-*---------------*      |                           |                                |
+*---------------*      |                           ^                                |
+                       |                           |                                |
                        *----> name ---> http.Get --*                                |
                        |                                                            |
-                       *----> id ---------------------------------------------------*
+                       *----> id -------------------------------------------------->*
                                                                                     |
                                                                                     |
                                                                                     v
@@ -98,6 +100,8 @@ Each book title is sorted as title without associated series. This can easily be
                                | a list               |
                                *----------------------*
 ```
+
+Http requests to the Goodreads api are made using Go routines and sync to avoid synchronous requests (queuing takes lots of time taking in account that the Goodreads api is limited in request / time).
 
 ### Testing
 
